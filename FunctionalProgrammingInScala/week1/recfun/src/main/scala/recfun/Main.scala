@@ -62,10 +62,12 @@ object Main {
 
        def check1(list:List[Char], count:Int):Boolean = {
           if(list.isEmpty) count == 0
-          list.head match {
-            case '(' => check1(list.tail,count+1)
-            case ')' => check1(list.tail,count-1)
-            case _ => check1(list.tail,count)
+          else {
+            list.head match {
+              case '(' => check1(list.tail, count + 1)
+              case ')' => check1(list.tail, count - 1)
+              case _ => check1(list.tail, count)
+            }
           }
        }
 
@@ -81,7 +83,7 @@ object Main {
       }
       val newList = build(chars,"").toList
 
-    if(newList.length % 2 == 0) check(newList)
+    if(newList.length % 2 == 0) check1(newList,0)
     else false
     }
 
