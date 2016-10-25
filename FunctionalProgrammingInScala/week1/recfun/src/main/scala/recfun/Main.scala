@@ -40,27 +40,44 @@ object Main {
       }
 
       def opened(list:List[Char],count:Int): Int = {
-        list.head match {
-          case '(' =>  opened(list.tail,count +1)
-          case _  => count
+        if (list.isEmpty) count
+        else {
+          list.head match {
+            case '(' =>  opened(list.tail,count +1)
+            case _  => count
+          }
         }
+
       }
 
       def closed(list:List[Char],count:Int): Int = {
-        list.head match {
-          case ')' =>  closed(list.tail,count +1)
-          case _  => count
+        if (list.isEmpty) count
+        else {
+          list.head match {
+            case ')' =>  closed(list.tail,count +1)
+            case _  => count
+          }
         }
       }
 
-      def check(list:List[Char]):Boolean = {
-        if(!list.isEmpty)  {
-          if(list.head != list.last) {
-            check(list.tail.dropRight(1))
-          } else {
-            false
+       def check1(list:List[Char], count:Int):Boolean = {
+          if(list.isEmpty) count == 0
+          list.head match {
+            case '(' => check1(list.tail,count+1)
+            case ')' => check1(list.tail,count-1)
+            case _ => check1(list.tail,count)
           }
-        } else {true}
+       }
+
+      def check(list:List[Char]):Boolean = {
+        if (!list.isEmpty) {
+          val count = opened(list, 0)
+
+          if (list.length >= count &&  count == closed(list.drop(count), 0)) {
+            check(list.drop(count*2))
+          } else false
+
+        } else true
       }
       val newList = build(chars,"").toList
 
