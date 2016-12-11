@@ -27,7 +27,13 @@ class HuffmanSuite extends FunSuite {
       assert(chars(t2) === List('a','b','d'))
     }
   }
-
+  test("time of character a in string 'Hello aaa'"){
+    val times1 = times(List('a','b','d','a'))
+    new TestTrees {
+      var y: (Char, Int) = times1.head
+      assert( times1.head._2 === 2)
+    }
+  }
 
   test("string2chars(\"hello, world\")") {
     assert(string2Chars("hello, world") === List('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'))
