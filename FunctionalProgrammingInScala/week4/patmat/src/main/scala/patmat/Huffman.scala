@@ -33,7 +33,7 @@ object Huffman {
     }
   
     def chars(tree: CodeTree): List[Char] = {
-
+      tree.asInstanceOf[Fork].chars
     }
   
   def makeCodeTree(left: CodeTree, right: CodeTree) =
