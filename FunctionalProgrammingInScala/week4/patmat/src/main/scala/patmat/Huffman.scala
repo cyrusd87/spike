@@ -90,12 +90,16 @@ object Huffman {
    * head of the list should have the smallest weight), where the weight
    * of a leaf is the frequency of the character.
    */
-    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = ???
+    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
+      freqs.sortBy(x => x._2).map(x => new Leaf(x._1, x._2))
+    }
   
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-    def singleton(trees: List[CodeTree]): Boolean = ???
+    def singleton(trees: List[CodeTree]): Boolean = {
+      trees.length == 1
+    }
   
   /**
    * The parameter `trees` of this function is a list of code trees ordered
@@ -109,7 +113,15 @@ object Huffman {
    * If `trees` is a list of less than two elements, that list should be returned
    * unchanged.
    */
-    def combine(trees: List[CodeTree]): List[CodeTree] = ???
+    def combine(trees: List[CodeTree]): List[CodeTree] = {
+      if(trees.length <= 2) trees
+      val orderedTree = trees.map(x => (x,weight(x))).sortBy(x=> x._2).map(x => x._1)
+      val first = orderedTree.head.asInstanceOf[Leaf]
+      val second = orderedTree.slice(1, orderedTree.length).head.asInstanceOf[Leaf]
+      val fork =Fork(first,second,List(first.char,second.char), weight(first)+weight(second))
+      List[CodeTree](fork) ++ orderedTree.slice(2,orderedTree.length)
+
+    }
   
   /**
    * This function will be called in the following way:
