@@ -39,14 +39,7 @@ object Anagrams {
   }
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = {
-    s.foldLeft(List[(Char,Int)]())((z,w) => z ++ wordOccurrences(w))
-    /*
-    var list =List[(Char,Int)]()
-
-    for(w <-s) list=list ++ wordOccurrences(w)
-    list*/
-  }
+  def sentenceOccurrences(s: Sentence): Occurrences = wordOccurrences(s.mkString)
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
    *  the words that have that occurrence count.
@@ -63,7 +56,8 @@ object Anagrams {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = dictionary.groupBy(wordOccurrences(_))
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] =
+  dictionary.groupBy(wordOccurrences(_)).withDefaultValue(List())
 
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] = dictionaryByOccurrences(wordOccurrences(word))
@@ -113,7 +107,17 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    (y.toMap.foldLeft(x.toMap)((map, tuple) => {
+      val count = map(tuple._1) - tuple._2
+      if(count <= 0) {
+        map - tuple._1;
+      }
+      else map.updated(tuple._1, count)
+
+    })).toList.sorted
+  }
+
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -155,5 +159,21 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+
+    def foo(occurrences: Occurrences): List[Sentence] = {
+      println("Occurences: " + occurrences.length)
+      if(occurrences.isEmpty) List(List())
+      else {
+        for {
+          actualCombination <- combinations(occurrences)
+          word <- dictionaryByOccurrences(actualCombination)
+          otherAnagrams <- foo(subtract(occurrences,actualCombination))
+        } yield word :: otherAnagrams
+      }
+    }
+
+    foo(sentenceOccurrences(sentence))
+
+  }
 }
